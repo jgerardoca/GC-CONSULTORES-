@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GC Consultores Jurídicos · Lic. José Gerardo Cañas Aguilar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       TOKENS Y VARIABLES
+    ============================================================ */
+    :root {
+      --color-cream:   #F4F1EA;
+      --color-cream-d: #E8E2D2;
+      --color-black:   #1A1A1A;
+      --color-black-s: #2E2E2E;
+      --color-gold:    #C9A84C;
+      --color-gold-d:  #A8882E;
+      --color-green:   #0F2547;   /* azul marino institucional */
+      --color-green-l: #1B3A6B;   /* azul marino claro (hover) */
+      --color-muted:   #5C6373;
+
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans:  'DM Sans', system-ui, sans-serif;
+
+      --sidebar-w: 36px;
+      --section-pad: clamp(60px, 8vw, 120px);
+    }
+
+    /* ============================================================
+       RESET
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background-color: var(--color-cream);
+      color: var(--color-black);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    img, svg { display: block; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ============================================================
+       BARRA LATERAL DECORATIVA
+    ============================================================ */
+    .sidebar-deco {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      width: var(--sidebar-w);
+      background: var(--color-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .sidebar-deco span {
+      color: var(--color-gold);
+      font-family: var(--font-sans);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       OFFSET DE CONTENIDO (para la barra lateral)
+    ============================================================ */
+    .page-wrap {
+      margin-left: var(--sidebar-w);
+    }
+
+    /* ============================================================
+       NAVEGACIÓN
+    ============================================================ */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: var(--sidebar-w);
+      right: 0;
+      z-index: 99;
+      padding: 0 clamp(20px, 5vw, 60px);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(245, 240, 232, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      transition: background 0.3s;
+    }
+    .nav-logo {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--color-green);
+    }
+    .nav-logo span {
+      color: var(--color-gold);
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-black-s);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--color-gold); }
+    .nav-cta {
+      background: var(--color-green) !important;
+      color: var(--color-cream) !important;
+      padding: 8px 18px !important;
+      border-radius: 2px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--color-green-l) !important; color: var(--color-cream) !important; }
+
+    /* Hamburguesa */
+    .nav-burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+    .nav-burger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--color-black);
+      transition: all 0.3s;
+    }
+    .nav-burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-burger.open span:nth-child(2) { opacity: 0; }
+    .nav-burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: var(--sidebar-w);
+      right: 0;
+      background: var(--color-cream);
+      border-bottom: 2px solid var(--color-gold);
+      padding: 20px clamp(20px,5vw,60px);
+      z-index: 98;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-black);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--color-cream-d);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-burger { display: flex; }
+    }
+
+    /* ============================================================
+       SEPARADOR DORADO
+    ============================================================ */
+    .gold-rule {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-gold) 20%, var(--color-gold) 80%, transparent);
+      opacity: 0.5;
+    }
+    .gold-rule-short {
+      width: 60px;
+      height: 2px;
+      background: var(--color-gold);
+      margin: 0 auto;
+    }
+
+    /* ============================================================
+       NÚMERO DECORATIVO DE SECCIÓN
+    ============================================================ */
+    .section-num {
+      position: absolute;
+      font-family: var(--font-serif);
+      font-size: clamp(80px, 12vw, 160px);
+      font-weight: 700;
+      color: var(--color-black);
+      opacity: 0.04;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      right: clamp(20px, 5vw, 60px);
+      top: 30px;
+    }
+
+    /* ============================================================
+       SECCIÓN BASE
+    ============================================================ */
+    section {
+      position: relative;
+      padding: var(--section-pad) clamp(20px, 6vw, 80px);
+      overflow: hidden;
+    }
+    section:first-of-type { padding-top: calc(var(--section-pad) + 64px); }
+
+    .section-label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 700;
+      color: var(--color-green);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .section-body {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--color-muted);
+      max-width: 620px;
+      line-height: 1.75;
+    }
+
+    /* ============================================================
+       01 · HERO
+    ============================================================ */
+    #hero {
+      background: var(--color-green);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 64px;
+    }
+    .hero-deco-line {
+      width: 1px;
+      height: 60px;
+      background: var(--color-gold);
+      margin: 0 auto 40px;
+      animation: fadeDown 1s ease 0.2s both;
+    }
+    .hero-logo-gc {
+      font-family: var(--font-serif);
+      font-size: clamp(72px, 12vw, 120px);
+      font-weight: 700;
+      color: var(--color-cream);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      animation: fadeUp 0.8s ease 0.4s both;
+    }
+    .hero-logo-gc em {
+      color: var(--color-gold);
+      font-style: normal;
+    }
+    .hero-logo-sub {
+      font-family: var(--font-sans);
+      font-size: clamp(11px, 2vw, 14px);
+      font-weight: 500;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.55);
+      margin-top: 6px;
+      animation: fadeUp 0.8s ease 0.55s both;
+    }
+    .hero-gold-bar {
+      width: clamp(60px, 10vw, 120px);
+      height: 2px;
+      background: var(--color-gold);
+      margin: 36px auto;
+      animation: expand 0.8s ease 0.7s both;
+    }
+    .hero-tagline {
+      font-family: var(--font-serif);
+      font-size: clamp(18px, 3vw, 28px);
+      font-weight: 400;
+      font-style: italic;
+      color: rgba(245,240,232,0.85);
+      max-width: 520px;
+      line-height: 1.5;
+      animation: fadeUp 0.8s ease 0.85s both;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 14px 36px;
+      border: 1px solid var(--color-gold);
+      color: var(--color-gold);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      transition: background 0.25s, color 0.25s;
+      animation: fadeUp 0.8s ease 1s both;
+    }
+    .hero-cta:hover {
+      background: var(--color-gold);
+      color: var(--color-green);
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.4;
+      animation: fadeUp 1s ease 1.4s both;
+    }
+    .hero-scroll span {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-cream);
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 36px;
+      background: var(--color-gold);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    /* Watermark BG */
+    .hero-wm {
+      position: absolute;
+      bottom: -20px;
+      right: -20px;
+      font-family: var(--font-serif);
+      font-size: clamp(120px, 20vw, 240px);
+      font-weight: 700;
+      color: rgba(255,255,255,0.03);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ============================================================
+       02 · ÁREAS DE PRÁCTICA
+    ============================================================ */
+    #areas {
+      background: var(--color-cream);
+    }
+    .areas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .area-card {
+      background: #fff;
+      border: 1px solid rgba(201,168,76,0.15);
+      padding: 32px 28px;
+      position: relative;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      cursor: default;
+      overflow: hidden;
+    }
+    .area-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0;
+      width: 3px; height: 0;
+      background: var(--color-gold);
+      transition: height 0.3s ease;
+    }
+    .area-card:hover::before { height: 100%; }
+    .area-card:hover {
+      border-color: var(--color-gold);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(27,58,45,0.08);
+    }
+    .area-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+      color: var(--color-gold);
+      line-height: 1;
+    }
+    .area-name {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-green);
+      margin-bottom: 10px;
+    }
+    .area-desc {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       03 · SOBRE EL DESPACHO
+    ============================================================ */
+    #sobre {
+      background: var(--color-cream-d);
+    }
+    .sobre-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(40px, 6vw, 80px);
+      align-items: center;
+      margin-top: 48px;
+    }
+    .sobre-photo {
+      aspect-ratio: 3/4;
+      background: var(--color-cream);
+      border: 1px solid rgba(201,168,76,0.3);
+      position: relative;
+      overflow: hidden;
+      max-width: 360px;
+    }
+    .sobre-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 6px solid var(--color-cream-d);
+      pointer-events: none;
+    }
+    .sobre-photo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: grayscale(0.1) contrast(1.02);
+    }
+    .sobre-photo-frame {
+      position: absolute;
+      top: 12px; left: 12px; right: 12px; bottom: 12px;
+      border: 1px solid rgba(201,168,76,0.3);
+      pointer-events: none;
+    }
+    .sobre-text blockquote {
+      font-family: var(--font-serif);
+      font-size: clamp(18px, 2.5vw, 22px);
+      font-style: italic;
+      color: var(--color-green);
+      line-height: 1.5;
+      margin-bottom: 24px;
+      padding-left: 20px;
+      border-left: 2px solid var(--color-gold);
+    }
+    .sobre-text p {
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--color-muted);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+    .sobre-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .sobre-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-green);
+      border: 1px solid rgba(27,58,45,0.25);
+      padding: 5px 12px;
+    }
+    @media (max-width: 700px) {
+      .sobre-inner { grid-template-columns: 1fr; }
+      .sobre-photo { max-width: 260px; margin: 0 auto; }
+    }
+
+    /* ============================================================
+       04 · SERVICIOS DESTACADOS
+    ============================================================ */
+    #servicios {
+      background: var(--color-green);
+    }
+    #servicios .section-label { color: rgba(201,168,76,0.7); }
+    #servicios .section-title { color: var(--color-cream); }
+    #servicios .section-num { color: rgba(245,240,232,0.04); opacity: 1; }
+
+    .servicios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1px;
+      background: rgba(201,168,76,0.15);
+      margin-top: 48px;
+      border: 1px solid rgba(201,168,76,0.15);
+    }
+    .servicio-item {
+      background: var(--color-green);
+      padding: 36px 28px;
+      transition: background 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .servicio-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 28px; right: 28px;
+      height: 1px;
+      background: rgba(201,168,76,0.15);
+    }
+    .servicio-item:hover { background: var(--color-green-l); }
+    .servicio-num {
+      font-family: var(--font-serif);
+      font-size: 40px;
+      font-weight: 700;
+      color: rgba(201,168,76,0.2);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .servicio-name {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-cream);
+      margin-bottom: 12px;
+    }
+    .servicio-desc {
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(245,240,232,0.55);
+      line-height: 1.65;
+    }
+
+    /* ============================================================
+       05 · INMOBILIARIA
+    ============================================================ */
+    #inmobiliaria { background: var(--color-cream); }
+    .inmo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .inmo-card {
+      background: #fff;
+      border: 1px solid rgba(201,168,76,0.18);
+      padding: 36px 28px 32px;
+      position: relative;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      overflow: hidden;
+    }
+    .inmo-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--color-gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+    .inmo-card:hover::before { transform: scaleX(1); }
+    .inmo-card:hover {
+      border-color: var(--color-gold);
+      transform: translateY(-3px);
+      box-shadow: 0 14px 36px rgba(15,37,71,0.10);
+    }
+    .inmo-icon {
+      color: var(--color-green);
+      margin-bottom: 18px;
+      line-height: 0;
+    }
+    .inmo-tag {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-family: var(--font-serif);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-gold);
+      letter-spacing: 0.05em;
+    }
+    .inmo-name {
+      font-family: var(--font-serif);
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--color-green);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+    .inmo-desc {
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--color-muted);
+      line-height: 1.7;
+    }
+
+    /* ============================================================
+       06 · CONTACTO
+    ============================================================ */
+    #contacto {
+      background: var(--color-cream);
+    }
+    .contacto-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: clamp(40px,6vw,80px);
+      margin-top: 48px;
+      align-items: start;
+    }
+    .contacto-info-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-green);
+      margin-bottom: 24px;
+    }
+    .contacto-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .contacto-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--color-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--color-gold);
+      font-size: 16px;
+    }
+    .contacto-item-text {
+      font-size: 14px;
+      color: var(--color-muted);
+      line-height: 1.6;
+    }
+    .contacto-item-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      margin-bottom: 2px;
+    }
+    .wa-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      padding: 12px 24px;
+      background: #25D366;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      transition: background 0.2s;
+    }
+    .wa-btn:hover { background: #1ebe59; }
+
+    /* Formulario */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--color-green);
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      background: #fff;
+      border: 1px solid rgba(201,168,76,0.25);
+      padding: 12px 14px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--color-black);
+      outline: none;
+      transition: border-color 0.2s;
+      border-radius: 0;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { border-color: var(--color-gold); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-submit {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 14px 36px;
+      background: var(--color-green);
+      color: var(--color-cream);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    .form-submit:hover { background: var(--color-green-l); }
+    .form-success {
+      display: none;
+      padding: 16px;
+      background: rgba(27,58,45,0.07);
+      border-left: 3px solid var(--color-gold);
+      font-size: 14px;
+      color: var(--color-green);
+      margin-top: 16px;
+    }
+    @media (max-width: 700px) {
+      .contacto-inner { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--color-black);
+      color: rgba(245,240,232,0.45);
+      padding: 36px clamp(20px,6vw,80px);
+      margin-left: 0;
+    }
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .footer-logo {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      color: var(--color-cream);
+    }
+    .footer-logo em {
+      color: var(--color-gold);
+      font-style: normal;
+    }
+    .footer-copy {
+      font-size: 12px;
+      font-weight: 300;
+    }
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .footer-links a {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: rgba(245,240,232,0.35);
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--color-gold); }
+    .footer-social {
+      display: flex;
+      gap: 12px;
+    }
+    .social-dot {
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(245,240,232,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: rgba(245,240,232,0.3);
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .social-dot:hover { border-color: var(--color-gold); color: var(--color-gold); }
+
+    /* ============================================================
+       ANIMACIONES
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes expand {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { transform: scaleY(1); opacity: 0.4; }
+      50% { transform: scaleY(0.5); opacity: 0.1; }
+    }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ============================================================
+       TWEAKS PANEL  (inyectado por JS)
+    ============================================================ */
+    #tweaks-panel {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 260px;
+      background: var(--color-cream);
+      border: 1px solid var(--color-gold);
+      box-shadow: 0 8px 32px rgba(27,58,45,0.15);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      font-family: var(--font-sans);
+      font-size: 13px;
+    }
+    #tweaks-panel.visible { display: flex; }
+    .tp-header {
+      background: var(--color-green);
+      color: var(--color-cream);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .tp-close { cursor: pointer; opacity: 0.5; transition: opacity 0.2s; background: none; border: none; color: inherit; font-size: 16px; }
+    .tp-close:hover { opacity: 1; }
+    .tp-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+    .tp-row { display: flex; flex-direction: column; gap: 4px; }
+    .tp-label { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--color-muted); }
+    .tp-row select, .tp-row input[type=color] {
+      width: 100%; padding: 6px 8px; border: 1px solid rgba(201,168,76,0.25);
+      background: #fff; font-family: var(--font-sans); font-size: 13px; color: var(--color-black);
+      border-radius: 0; appearance: none; cursor: pointer;
+    }
+    .tp-row input[type=color] { height: 36px; padding: 2px; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <!-- ===== BARRA LATERAL DECORATIVA ===== -->
+  <aside class="sidebar-deco" aria-hidden="true">
+    <span>Derecho · Ética · Rigor</span>
+  </aside>
+
+  <!-- ===== NAVEGACIÓN ===== -->
+  <nav class="nav" role="navigation" aria-label="Navegación principal">
+    <div class="nav-logo"><em>GC</em> Consultores Jurídicos</div>
+    <ul class="nav-links" role="list">
+      <li><a href="#areas">Práctica</a></li>
+      <li><a href="#sobre">El Despacho</a></li>
+      <li><a href="#servicios">Servicios</a></li>
+      <li><a href="#inmobiliaria">Inmobiliaria</a></li>
+      <li><a href="#contacto" class="nav-cta">Solicitar consulta</a></li>
+    </ul>
+    <button class="nav-burger" id="burger" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Menú móvil -->
+  <div class="nav-mobile" id="navMobile" role="navigation" aria-label="Menú móvil">
+    <a href="#areas" class="mobile-link">Áreas de Práctica</a>
+    <a href="#sobre" class="mobile-link">El Despacho</a>
+    <a href="#servicios" class="mobile-link">Servicios</a>
+    <a href="#inmobiliaria" class="mobile-link">Inmobiliaria</a>
+    <a href="#contacto" class="mobile-link">Contacto</a>
+  </div>
+
+  <div class="page-wrap">
+
+    <!-- ===== 01 · HERO ===== -->
+    <section id="hero" aria-labelledby="hero-heading">
+      <div class="hero-wm" aria-hidden="true">GC</div>
+      <div class="hero-deco-line" aria-hidden="true"></div>
+      <div class="hero-logo-gc" id="hero-heading">
+        <em>GC</em>
+      </div>
+      <div class="hero-logo-sub">Consultores Jurídicos</div>
+      <div class="hero-gold-bar" aria-hidden="true"></div>
+      <p class="hero-tagline">
+        "Asesoría jurídica con rigor, ética y visión estratégica"
+      </p>
+      <a href="#contacto" class="hero-cta">Solicitar consulta</a>
+
+      <div class="hero-scroll" aria-hidden="true">
+        <span>Scroll</span>
+        <div class="hero-scroll-line"></div>
+      </div>
+    </section>
+
+    <div class="gold-rule"></div>
+
+    <!-- ===== 02 · ÁREAS DE PRÁCTICA ===== -->
+    <section id="areas" aria-labelledby="areas-heading">
+      <div class="section-num" aria-hidden="true">02</div>
+      <p class="section-label reveal">Áreas de Práctica</p>
+      <h2 class="section-title reveal reveal-delay-1" id="areas-heading">
+        Especialización jurídica<br />al más alto nivel
+      </h2>
+      <p class="section-body reveal reveal-delay-2">
+        Atendemos cada caso con rigor técnico, criterio estratégico y pleno conocimiento del ordenamiento jurídico mexicano vigente.
+      </p>
+
+      <div class="areas-grid">
+        <!-- Derecho Civil -->
+        <article class="area-card reveal reveal-delay-1">
+          <div class="area-icon" aria-hidden="true">⚖</div>
+          <h3 class="area-name">Derecho Civil</h3>
+          <p class="area-desc">Contratos, obligaciones, sucesiones, propiedad y responsabilidad civil. Asesoría preventiva y litigio.</p>
+        </article>
+        <!-- Derecho Familiar -->
+        <article class="area-card reveal reveal-delay-2">
+          <div class="area-icon" aria-hidden="true">🏛</div>
+          <h3 class="area-name">Derecho Familiar</h3>
+          <p class="area-desc">Divorcio, guarda y custodia, alimentos, adopción y tutela. Enfoque humano con sólida defensa jurídica.</p>
+        </article>
+        <!-- Derecho Mercantil -->
+        <article class="area-card reveal reveal-delay-3">
+          <div class="area-icon" aria-hidden="true">§</div>
+          <h3 class="area-name">Derecho Mercantil</h3>
+          <p class="area-desc">Constitución de sociedades, contratos comerciales, títulos de crédito y litigio oral mercantil.</p>
+        </article>
+        <!-- Derecho Penal -->
+        <article class="area-card reveal reveal-delay-1">
+          <div class="area-icon" aria-hidden="true">◈</div>
+          <h3 class="area-name">Derecho Penal</h3>
+          <p class="area-desc">Defensa en el sistema acusatorio oral, asesoría a víctimas, gestión de medidas cautelares.</p>
+        </article>
+        <!-- Amparo -->
+        <article class="area-card reveal reveal-delay-2">
+          <div class="area-icon" aria-hidden="true">◻</div>
+          <h3 class="area-name">Derecho Constitucional<br /><em style="font-style:normal;font-size:14px;color:var(--color-gold)">Juicio de Amparo</em></h3>
+          <p class="area-desc">Amparo directo e indirecto. Defensa de derechos fundamentales ante todos los niveles jurisdiccionales.</p>
+        </article>
+        <!-- Grafoscopía -->
+        <article class="area-card reveal reveal-delay-3">
+          <div class="area-icon" aria-hidden="true">✦</div>
+          <h3 class="area-name">Grafoscopía Forense</h3>
+          <p class="area-desc">Peritajes especializados en análisis de documentos, firmas y escritura manuscrita para procedimientos judiciales.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="gold-rule"></div>
+
+    <!-- ===== 03 · SOBRE EL DESPACHO ===== -->
+    <section id="sobre" aria-labelledby="sobre-heading">
+      <div class="section-num" aria-hidden="true">03</div>
+      <p class="section-label reveal">El Despacho</p>
+      <h2 class="section-title reveal reveal-delay-1" id="sobre-heading">Autoridad académica<br />y trayectoria litigante</h2>
+
+      <div class="sobre-inner">
+        <div class="sobre-photo reveal">
+          <img src="assets/lic-canas-aguilar.jpg" alt="Lic. José Gerardo Cañas Aguilar" class="sobre-photo-img" />
+          <div class="sobre-photo-frame" aria-hidden="true"></div>
+        </div>
+        <div class="sobre-text">
+          <blockquote class="reveal reveal-delay-1">
+            "El derecho ejercido con rigor y ética es la mejor garantía para el justiciable."
+          </blockquote>
+          <p class="reveal reveal-delay-2">
+            El Lic. José Gerardo Cañas Aguilar es abogado litigante con amplia trayectoria en los tribunales del Poder Judicial de la Federación y del fuero común. Su formación combina la práctica forense con la academia, desempeñándose como <strong>catedrático en diversas Instituciones</strong>.
+          </p>
+          <p class="reveal reveal-delay-3">
+            Especialista en <strong>grafoscopía forense</strong>, ofrece servicios periciales de primer nivel en análisis de documentos y firmas cuestionadas.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="gold-rule"></div>
+
+    <!-- ===== 04 · SERVICIOS DESTACADOS ===== -->
+    <section id="servicios" aria-labelledby="servicios-heading">
+      <div class="section-num" aria-hidden="true">04</div>
+      <p class="section-label reveal">Servicios Destacados</p>
+      <h2 class="section-title reveal reveal-delay-1" id="servicios-heading">Lo que hacemos<br />mejor</h2>
+
+      <div class="servicios-grid">
+        <article class="servicio-item reveal reveal-delay-1">
+          <div class="servicio-num">01</div>
+          <h3 class="servicio-name">Litigio Oral Mercantil y Familiar</h3>
+          <p class="servicio-desc">Representación en audiencias orales, estrategia procesal y negociación con enfoque en resultados concretos.</p>
+        </article>
+        <article class="servicio-item reveal reveal-delay-2">
+          <div class="servicio-num">02</div>
+          <h3 class="servicio-name">Juicios de Amparo</h3>
+          <p class="servicio-desc">Formulación de demandas, recursos y seguimiento ante Juzgados de Distrito y Tribunales Colegiados.</p>
+        </article>
+        <article class="servicio-item reveal reveal-delay-3">
+          <div class="servicio-num">03</div>
+          <h3 class="servicio-name">Peritaje en Grafoscopía</h3>
+          <p class="servicio-desc">Dictámenes periciales sobre autenticidad de firmas, documentos y escritura; ratificación en juicio.</p>
+        </article>
+        <article class="servicio-item reveal reveal-delay-4">
+          <div class="servicio-num">04</div>
+          <h3 class="servicio-name">Consultoría en Tecnología Legal e IA</h3>
+          <p class="servicio-desc">Implementación de herramientas de inteligencia artificial aplicadas a la práctica jurídica.</p>
+        </article>
+        <article class="servicio-item reveal reveal-delay-1">
+          <div class="servicio-num">05</div>
+          <h3 class="servicio-name">Sucesiones Testamentarias e Intestamentarias</h3>
+          <p class="servicio-desc">Tramitación integral de juicios sucesorios, partición de bienes y asesoría en planeación testamentaria.</p>
+        </article>
+        <article class="servicio-item reveal reveal-delay-2">
+          <div class="servicio-num">06</div>
+          <h3 class="servicio-name">Contratos y Negociaciones</h3>
+          <p class="servicio-desc">Redacción, revisión y dictamen de contratos civiles, mercantiles y laborales con enfoque preventivo.</p>
+        </article>
+        <article class="servicio-item reveal reveal-delay-3">
+          <div class="servicio-num">07</div>
+          <h3 class="servicio-name">Derecho Laboral</h3>
+          <p class="servicio-desc">Defensa ante tribunales laborales, conciliaciones, despidos, prestaciones y asesoría a patrones y trabajadores.</p>
+        </article>
+        <article class="servicio-item reveal reveal-delay-4">
+          <div class="servicio-num">08</div>
+          <h3 class="servicio-name">Mediación y Arbitraje</h3>
+          <p class="servicio-desc">Solución alternativa de controversias mediante procedimientos de mediación y arbitraje privado.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="gold-rule"></div>
+
+    <!-- ===== 05 · INMOBILIARIA ===== -->
+    <section id="inmobiliaria" aria-labelledby="inmobiliaria-heading">
+      <div class="section-num" aria-hidden="true">05</div>
+      <p class="section-label reveal">División Inmobiliaria</p>
+      <h2 class="section-title reveal reveal-delay-1" id="inmobiliaria-heading">Bienes raíces<br />con respaldo jurídico</h2>
+      <p class="section-body reveal reveal-delay-2">
+        Complementamos nuestra práctica legal con un área especializada en bienes inmuebles, brindando certeza jurídica y acompañamiento integral en cada operación.
+      </p>
+
+      <div class="inmo-grid">
+        <article class="inmo-card reveal reveal-delay-1">
+          <div class="inmo-icon" aria-hidden="true">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/><path d="M9 11h0M15 11h0"/></svg>
+          </div>
+          <div class="inmo-tag">01</div>
+          <h3 class="inmo-name">Administración de Bienes Inmuebles</h3>
+          <p class="inmo-desc">Gestión integral de propiedades: cobranza, mantenimiento, supervisión de inquilinos, contratos y reportes periódicos al propietario.</p>
+        </article>
+
+        <article class="inmo-card reveal reveal-delay-2">
+          <div class="inmo-icon" aria-hidden="true">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-7H9v7H4a1 1 0 01-1-1z"/><circle cx="16" cy="15" r="1.2"/></svg>
+          </div>
+          <div class="inmo-tag">02</div>
+          <h3 class="inmo-name">Venta de Inmuebles</h3>
+          <p class="inmo-desc">Asesoría y representación en operaciones de compraventa: avaluación, negociación, escrituración y due diligence registral.</p>
+        </article>
+
+        <article class="inmo-card reveal reveal-delay-3">
+          <div class="inmo-icon" aria-hidden="true">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M8 7V4h8v3"/><path d="M3 13h18"/><path d="M11 16h2"/></svg>
+          </div>
+          <div class="inmo-tag">03</div>
+          <h3 class="inmo-name">Renta de Inmuebles</h3>
+          <p class="inmo-desc">Comercialización y arrendamiento de propiedades residenciales y comerciales, con contratos sólidos y verificación de inquilinos.</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="gold-rule"></div>
+
+    <!-- ===== 06 · CONTACTO ===== -->
+    <section id="contacto" aria-labelledby="contacto-heading">
+      <div class="section-num" aria-hidden="true">06</div>
+      <p class="section-label reveal">Contacto</p>
+      <h2 class="section-title reveal reveal-delay-1" id="contacto-heading">Inicie su consulta<br />hoy mismo</h2>
+
+      <div class="contacto-inner">
+        <!-- Info -->
+        <div class="reveal">
+          <h3 class="contacto-info-title">GC Consultores Jurídicos</h3>
+          <div class="contacto-item">
+            <div class="contacto-icon" aria-hidden="true">📍</div>
+            <div class="contacto-item-text">
+              <div class="contacto-item-label">Ubicación</div>
+              Coyoacán, Ciudad de México
+            </div>
+          </div>
+          <div class="contacto-item">
+            <div class="contacto-icon" aria-hidden="true">✉</div>
+            <div class="contacto-item-text">
+              <div class="contacto-item-label">Correo Electrónico</div>
+              contacto@gcconsultoresjuridicos.mx
+            </div>
+          </div>
+          <div class="contacto-item">
+            <div class="contacto-icon" aria-hidden="true">⏱</div>
+            <div class="contacto-item-text">
+              <div class="contacto-item-label">Atención</div>
+              Lunes a viernes, 9:00–18:00 h<br />
+              Cita previa requerida
+            </div>
+          </div>
+          <div class="contacto-item">
+            <div class="contacto-icon" aria-hidden="true">☏</div>
+            <div class="contacto-item-text">
+              <div class="contacto-item-label">Tel&eacute;fono / WhatsApp</div>
+              <a href="tel:+525570070069" style="color:inherit;">55 700 700 69</a>
+            </div>
+          </div>
+          <a href="https://wa.me/525570070069?text=Hola%2C%20me%20gustar%C3%ADa%20solicitar%20una%20consulta%20jur%C3%ADdica." class="wa-btn" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Escribir por WhatsApp
+          </a>
+        </div>
+
+        <!-- Formulario -->
+        <form id="contactForm" class="reveal reveal-delay-2" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="fname">Nombre completo</label>
+              <input type="text" id="fname" name="nombre" placeholder="Ej. María González" required />
+            </div>
+            <div class="form-group">
+              <label for="femail">Correo electrónico</label>
+              <input type="email" id="femail" name="email" placeholder="su@correo.com" required />
+            </div>
+            <div class="form-group full">
+              <label for="fasunto">Asunto</label>
+              <select id="fasunto" name="asunto" required>
+                <option value="" disabled selected>Seleccione el área de su consulta…</option>
+                <option>Derecho Civil</option>
+                <option>Derecho Familiar</option>
+                <option>Derecho Mercantil</option>
+                <option>Derecho Penal</option>
+                <option>Juicio de Amparo</option>
+                <option>Grafoscopía Forense</option>
+                <option>Tecnología Legal / IA</option>
+                <option>Otro asunto</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="fmensaje">Descripción del asunto</label>
+              <textarea id="fmensaje" name="mensaje" placeholder="Describa brevemente su situación jurídica…" required></textarea>
+            </div>
+          </div>
+          <button type="submit" class="form-submit">Enviar consulta</button>
+          <div class="form-success" id="formSuccess" role="alert">
+            Su mensaje ha sido recibido. Nos pondremos en contacto en un plazo máximo de 24 horas hábiles.
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </div><!-- /page-wrap -->
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo"><em>GC</em> Consultores Jurídicos</div>
+        <p class="footer-copy" style="margin-top:6px;">
+          © 2025 · Todos los derechos reservados · Coyoacán, Ciudad de México
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="#" onclick="return false;">Aviso de Privacidad</a>
+        <a href="#" onclick="return false;">Términos de Uso</a>
+      </div>
+      <div class="footer-social" aria-label="Redes sociales">
+        <div class="social-dot" title="LinkedIn" role="link" tabindex="0">in</div>
+        <div class="social-dot" title="X / Twitter" role="link" tabindex="0">𝕏</div>
+        <div class="social-dot" title="Facebook" role="link" tabindex="0">f</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== TWEAKS PANEL ===== -->
+  <div id="tweaks-panel" role="complementary" aria-label="Panel de ajustes">
+    <div class="tp-header">
+      Tweaks
+      <button class="tp-close" id="tpClose" aria-label="Cerrar panel">✕</button>
+    </div>
+    <div class="tp-body">
+      <div class="tp-row">
+        <label class="tp-label">Acento dorado</label>
+        <input type="color" id="tw-gold" value="#C9A84C" />
+      </div>
+      <div class="tp-row">
+        <label class="tp-label">Verde institucional</label>
+        <input type="color" id="tw-green" value="#1B3A2D" />
+      </div>
+      <div class="tp-row">
+        <label class="tp-label">Fondo</label>
+        <input type="color" id="tw-bg" value="#F5F0E8" />
+      </div>
+      <div class="tp-row">
+        <label class="tp-label">Tipografía de encabezados</label>
+        <select id="tw-serif">
+          <option value="'Playfair Display', Georgia, serif">Playfair Display</option>
+          <option value="'Cormorant Garamond', Georgia, serif">Cormorant Garamond</option>
+          <option value="'EB Garamond', Georgia, serif">EB Garamond</option>
+          <option value="Georgia, serif">Georgia</option>
+        </select>
+      </div>
+      <div class="tp-row">
+        <label class="tp-label">Tipografía de cuerpo</label>
+        <select id="tw-sans">
+          <option value="'DM Sans', system-ui, sans-serif">DM Sans</option>
+          <option value="'Lato', system-ui, sans-serif">Lato</option>
+          <option value="Helvetica, Arial, sans-serif">Helvetica</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+       TWEAKS — protocolo de comunicación con el host
+    ============================================================ */
+    const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+      "gold": "#C9A84C",
+      "green": "#0F2547",
+      "bg": "#F4F1EA",
+      "serif": "'Playfair Display', Georgia, serif",
+      "sans": "'DM Sans', system-ui, sans-serif"
+    }/*EDITMODE-END*/;
+
+    // Aplicar tweaks al DOM
+    function applyTweaks(t) {
+      const r = document.documentElement.style;
+      r.setProperty('--color-gold', t.gold);
+      r.setProperty('--color-green', t.green);
+      r.setProperty('--color-cream', t.bg);
+      r.setProperty('--font-serif', t.serif);
+      r.setProperty('--font-sans', t.sans);
+    }
+
+    // Inicializar inputs del panel
+    const twGold  = document.getElementById('tw-gold');
+    const twGreen = document.getElementById('tw-green');
+    const twBg    = document.getElementById('tw-bg');
+    const twSerif = document.getElementById('tw-serif');
+    const twSans  = document.getElementById('tw-sans');
+
+    let tweaks = Object.assign({}, TWEAK_DEFAULTS);
+    applyTweaks(tweaks);
+
+    function syncInputs() {
+      twGold.value  = tweaks.gold;
+      twGreen.value = tweaks.green;
+      twBg.value    = tweaks.bg;
+      twSerif.value = tweaks.serif;
+      twSans.value  = tweaks.sans;
+    }
+    syncInputs();
+
+    function saveTweak(key, val) {
+      tweaks[key] = val;
+      applyTweaks(tweaks);
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*');
+    }
+
+    twGold.addEventListener('input',  e => saveTweak('gold',  e.target.value));
+    twGreen.addEventListener('input', e => saveTweak('green', e.target.value));
+    twBg.addEventListener('input',    e => saveTweak('bg',    e.target.value));
+    twSerif.addEventListener('change',e => saveTweak('serif', e.target.value));
+    twSans.addEventListener('change', e => saveTweak('sans',  e.target.value));
+
+    // Panel visibility
+    const tweaksPanel = document.getElementById('tweaks-panel');
+    document.getElementById('tpClose').addEventListener('click', () => {
+      tweaksPanel.classList.remove('visible');
+      window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+    });
+
+    // Register with host — listener FIRST, then announce
+    window.addEventListener('message', e => {
+      if (e.data?.type === '__activate_edit_mode')   tweaksPanel.classList.add('visible');
+      if (e.data?.type === '__deactivate_edit_mode') tweaksPanel.classList.remove('visible');
+    });
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+    /* ============================================================
+       MENÚ HAMBURGUESA
+    ============================================================ */
+    const burger    = document.getElementById('burger');
+    const navMobile = document.getElementById('navMobile');
+
+    burger.addEventListener('click', () => {
+      const isOpen = navMobile.classList.toggle('open');
+      burger.classList.toggle('open', isOpen);
+      burger.setAttribute('aria-expanded', isOpen);
+    });
+
+    // Cerrar al hacer click en enlace
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navMobile.classList.remove('open');
+        burger.classList.remove('open');
+        burger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    /* ============================================================
+       SCROLL REVEAL
+    ============================================================ */
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer  = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+
+    /* ============================================================
+       FORMULARIO — validación y feedback
+    ============================================================ */
+    const form = document.getElementById('contactForm');
+    const formSuccess = document.getElementById('formSuccess');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      // Validación básica
+      const required = form.querySelectorAll('[required]');
+      let valid = true;
+      required.forEach(el => {
+        if (!el.value.trim()) {
+          el.style.borderColor = '#c0392b';
+          valid = false;
+        } else {
+          el.style.borderColor = '';
+        }
+      });
+      if (!valid) return;
+
+      // Simular envío
+      const btn = form.querySelector('.form-submit');
+      btn.textContent = 'Enviando…';
+      btn.disabled = true;
+      setTimeout(() => {
+        formSuccess.style.display = 'block';
+        form.reset();
+        btn.textContent = 'Enviar consulta';
+        btn.disabled = false;
+      }, 1200);
+    });
+
+    // Limpiar borde de error al escribir
+    form.querySelectorAll('input, textarea, select').forEach(el => {
+      el.addEventListener('input', () => { el.style.borderColor = ''; });
+    });
+
+    /* ============================================================
+       NAVBAR — sombra al hacer scroll
+    ============================================================ */
+    const nav = document.querySelector('.nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 20
+        ? '0 4px 20px rgba(27,58,45,0.08)'
+        : 'none';
+    }, { passive: true });
+
+    /* ============================================================
+       CARGAR FUENTES ADICIONALES PARA TWEAKS
+    ============================================================ */
+    function loadFont(family) {
+      const id = 'gf-' + family.replace(/\s+/g,'');
+      if (document.getElementById(id)) return;
+      const link = document.createElement('link');
+      link.id   = id;
+      link.rel  = 'stylesheet';
+      link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@400;600;700&display=swap`;
+      document.head.appendChild(link);
+    }
+    twSerif.addEventListener('change', e => {
+      const match = e.target.value.match(/'([^']+)'/);
+      if (match) loadFont(match[1]);
+    });
+    twSans.addEventListener('change', e => {
+      const match = e.target.value.match(/'([^']+)'/);
+      if (match) loadFont(match[1]);
+    });
+  </script>
+
+</body>
+</html>
